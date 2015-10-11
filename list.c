@@ -18,17 +18,55 @@ list_t *list_new()
 
 void list_append(list_t *list, int elem)
 {
-  
+  list_t *current = list;
+
+  if(current != NULL)
+    {
+      while(current->next != NULL)
+	{
+	  current = current->next;
+	}
+
+      current->next = list_new();
+      current->next->elem = elem;
+      current->next->next = NULL; 
+    }
+
+  else
+    {
+      list =
+    }
 }
 
 void list_prepend(list_t *list, int elem)
 {
 }
 
+
+
 bool list_insert(list_t *list, int index, int elem)
 {
-  return true;
+  list_t *current = head;
+  list_t *new = malloc(sizeof(DB_t));
+  
+  if(index == 1)
+    {
+      new->elem = elem;
+      new->next = current;
+    }
+  
+  else
+    {
+      for(int i = 1; i < index-1; i++)
+	{
+	  current = current->next;
+	}
+      new->next = current->next;
+      current->next = new;
+    }
 }
+
+
 
 bool list_remove(list_t *list, int index, int *elem)
 {
@@ -53,3 +91,6 @@ int list_length(list_t *list)
 {
   return -1;
 }
+
+
+  
