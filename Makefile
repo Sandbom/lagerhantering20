@@ -26,3 +26,4 @@ clean:
 	rm -rf *.dSYM
 	rm -f *~
 	rm -f *#
+	rm -f .#*
