@@ -1,71 +1,40 @@
-// Code taken from Tobias Wrigstad IOOPM-15 föreläsning10.pdf
+/*
+Code pretty much taken from:
+https://github.com/IOOPM-UU/ioopm15/blob/master/forelasningar/L10/f10.pdf
+Author: Tobias Wrigstad
+Editor: Eric Falheim
+*/
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <ctype.h>
 
 #include "lagerio.h"
 
 #define STRIP_NEWLINE true
 
-#define Ask_int(q) ask_question(q, valid_int, str_to_int, true)
-#define Ask_str(q) ask_question(q, NULL,      str_to_str, false)
+struct shelf
+{
+  char row;
+  int column;
+};
 
+union result
+{
+  void *ptr;
+  long int_value;
+  char char_value;
+};
 
-
-
-struct shelf{
-  char name; // A-Z
-  int number; // 0-99
+char *read_string()
+{
+  return get_string_with_buffer(NULL, 0, STRIP_NEWLINE);
 }
 
-char *ask_question_string(char *question)
+char *get_string_with_buffer(char *buf, size_t len, bool strip_newline)
 {
-  puts(question);
-  return read_string();
-}
-
-
-int ask_int_question(char * question)
-{
-  puts(question);
-  return read_int();
-}
-
-
-int read_int(bool repeat_until_valid_int)
-{
-  char *buf = alloca(16);
-  int len = 16;
-
-  do {
-    buf = read_string_with_buffer(buf, len, STRIP_NEWLINE);
-  } while (repeat_until_valid_int && is_valid_int(buf) == false);
- 
-  return atol(buf);
-}
-
-
-bool is_valid_int(char *str)
-{
-  bool valid_int = true;
-
-  for (char *c = str; *c && valid_int; ++c)
-    {
-      valid_int = isdigit(*c);
-    }
-  return valid_int;
-}
-
-
-char *read_string(bool strip_newline)
-{
-  return read_string_with_buffer(NULL, 0, STRIP_NEWLINE);
-}
-
-char *read_string_with_buffer(char *buf, size_t len, bool strip_newline)
-{
-  ssize_t read = getline(&buf, &len, stdin);
+  ssize_t read = getline(&buf,&len,stdin);
   if(read > 0 && strip_newline)
     {
       buf[read-1] = '\0';
@@ -73,47 +42,81 @@ char *read_string_with_buffer(char *buf, size_t len, bool strip_newline)
   return buf;
 }
 
-shelf_t ask_shelf_question()
+bool is_valid_shelf(char *str)
 {
-  return *ask_question("Mata in hyllplats (tecken följt av siffra 0-99)",
-		       valid_shelf,
-		       str_to_shelf,
-		       true);
+  if (isalpha(str[0]) && strlen(str) == 3 && is_valid_int(str+1))
+    return true; 
+  return false;
 }
 
-void *ask_question(char *q, v_f validate, m_f convert, bool cleanup)
+bool is_valid_int(char *str)
 {
-  //Ask question until optional validation of input is satisfied.
-  char *input = NULL;
-
-  do {
-    puts(q);
-    if (input) free(input);
-    input = read_string();
-  } while (validate && validate(input) == false);
+  bool valid_int = true;
+  if (strlen(str) == 0)
+    valid_int = false;
   
-  //If a conversion function was specified, convert input.
-  void *result = convert ? convert(input) : input;
-
-  if(cleanup) free(input);
-  return result;  
+  for(char *c = str; *c && valid_int; ++c)
+    {
+      valid_int = isdigit(*c);
+    }
+  return valid_int;
 }
 
-bool valid_shelf(char *input)
+char *str_to_str(char *str)
 {
-  return strlen(input) == 3 && isalpha(input[0]) && valid_int(input+1);
+  return str;
 }
 
-shelf_t *str_to_shelf(char *input)
+int str_to_int(char *str)
+{
+  return atol(str);
+}
+
+shelf_t *str_to_shelf(char *str)
 {
   shelf_t *shelf = malloc(sizeof(shelf_t));
-  shelf->name = input[0];
-  shelf->number = atol(input+1);
+  shelf->row = str[0];
+  shelf->column = atol(str+1);
   return shelf;
 }
 
-int main(int argc, char *argv[])
+
+void *ask_question(char *q, v_f validate, m_f convert, bool cleanup)
 {
+  char *input = NULL;
   
-  return 0;
+  do{
+    puts(q);
+    if(input) free(input);
+    input = read_string();
+  } while(validate && validate(input) == false);
+
+  void *result = convert ? convert(input) : input;
+
+  if(cleanup) free(input);
+  return result;
+}
+
+char *ask_string_question()
+{
+  return ask_question("Enter a string:",
+		       NULL,
+		       NULL,
+		       true);
+}
+
+shelf_t *ask_shelf_question()
+{
+  return ask_question("Enter a character followed by an integer between 0-99: ",
+		      is_valid_shelf,
+		      str_to_shelf,
+		      true);
+}
+
+int *ask_int_question()
+{
+  return ask_question("Enter an integer: ",
+		      is_valid_int,
+		      str_to_int,
+		      true);
 }
