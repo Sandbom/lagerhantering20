@@ -20,13 +20,6 @@ struct shelf
   int column;
 };
 
-union result
-{
-  void *ptr;
-  long int_value;
-  char char_value;
-};
-
 char *read_string()
 {
   return get_string_with_buffer(NULL, 0, STRIP_NEWLINE);
