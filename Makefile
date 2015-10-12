@@ -1,9 +1,9 @@
 CC = gcc
 FLAGS = -Wall -std=c99 -ggdb
 
-all: 
+all: main
 
-main: main.c list.o binarytree.o lagerio.o
+main: main.c lagerio.o
 
 list.o: list.c list.h
 	$(CC) $(FLAGS) $^ -c
