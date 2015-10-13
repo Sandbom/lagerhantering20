@@ -5,8 +5,6 @@ Author: Tobias Wrigstad
 Editor: Eric Falheim
 */
 #include <string.h>
-#include <stdlib.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <ctype.h>
 
