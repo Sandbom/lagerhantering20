@@ -12,6 +12,14 @@ Editor: Eric Falheim
 
 #include "lagerio.h"
 
+#define Ask_int(q)  ask_question(q, is_valid_int, str_to_int, true)
+#define Ask_str(q)  ask_question(q, NULL, str_to_str, true)
+
+#define Ask_name(q) Ask_str("Name:")
+#define Ask_description(q) Ask_str("Description:")
+#define Ask_price(q) Ask_int("Price:")
+#define Ask_shelf(q) ask_question("Shelf - enter character followed by integer 0-99: ", is_valid_shelf, str_to_shelf, true)
+
 #define STRIP_NEWLINE true
 
 struct shelf
